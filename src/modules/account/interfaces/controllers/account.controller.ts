@@ -7,9 +7,9 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { AccountService } from '../application/account.service';
-import { CreateAccountDTO } from '../shared/dto/create-account.dto';
-import { PatchStatusDTO } from '../shared/dto/patch-status.dto';
+import { AccountService } from '../../application/account.service';
+import { CreateAccountDTO } from '../dtos/create-account.dto';
+import { PatchStatusDTO } from '../dtos/patch-status.dto';
 
 @Controller('contas')
 export class AccountController {

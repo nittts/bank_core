@@ -1,18 +1,18 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { IAccountRepository } from '../domain/account.repository';
-import { Account } from '../domain/account.entity';
 
-import { PatchStatusDTO } from '../shared/dto/patch-status.dto';
-import { CreateAccountDTO } from '../shared/dto/create-account.dto';
-import { AccountStatus } from '../shared/enums/account-status.enum';
+import { PatchStatusDTO } from '../interfaces/dtos/patch-status.dto';
+import { CreateAccountDTO } from '../interfaces/dtos/create-account.dto';
 
 import { CustomerService } from 'src/modules/customer/application/customer.service';
+import { AccountMapper } from '../interfaces/mappers/account.mapper';
 
 @Injectable()
 export class AccountService {
   constructor(
     private readonly accountRepository: IAccountRepository,
     private readonly customerService: CustomerService,
+    private readonly accountMapper: AccountMapper,
   ) {}
 
   async getAccount(id: number) {
@@ -42,16 +42,7 @@ export class AccountService {
 
     const accountNumber = await this.accountRepository.getNewAccountNumber();
 
-    const newAccount = new Account(
-      null,
-      accountNumber,
-      AccountStatus.INACTIVE,
-      owner,
-      null,
-      null,
-      [],
-      0,
-    );
+    const newAccount = this.accountMapper.toCreate(owner, accountNumber);
 
     return this.accountRepository.create(newAccount);
   }

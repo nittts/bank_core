@@ -1,22 +1,17 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ICustomerRepository } from '../domain/customer.repository';
-import { CreateCustomerDTO } from '../shared/dto/create-customer.dto';
-import { Customer } from '../domain/customer.entity';
+import { CreateCustomerDTO } from '../interfaces/dtos/create-customer.dto';
+import { CustomerMapper } from '../interfaces/mappers/customer.mapper';
 
 @Injectable()
 export class CustomerService {
-  constructor(private readonly customerRepository: ICustomerRepository) {}
+  constructor(
+    private readonly customerRepository: ICustomerRepository,
+    private readonly customerMapper: CustomerMapper,
+  ) {}
 
   async createCustomer(createCustomerDTO: CreateCustomerDTO) {
-    const newCustomer = new Customer(
-      null,
-      createCustomerDTO.fullName,
-      createCustomerDTO.document,
-      createCustomerDTO.birthDate,
-      [],
-      null,
-      null,
-    );
+    const newCustomer = this.customerMapper.toCreate(createCustomerDTO);
 
     const validCPF = newCustomer.validateDocument();
 
@@ -24,7 +19,7 @@ export class CustomerService {
       throw new BadRequestException('Invalid Document');
     }
 
-    const alreadyExists = this.customerRepository.findByDocument(
+    const alreadyExists = await this.customerRepository.findByDocument(
       newCustomer.document,
     );
 

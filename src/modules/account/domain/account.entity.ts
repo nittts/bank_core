@@ -1,5 +1,5 @@
 import { Customer } from 'src/modules/customer/domain/customer.entity';
-import { AccountStatus } from '../shared/enums/account-status.enum';
+import { AccountStatus } from './enums/account-status.enum';
 import { Balance } from './value-objects/balance.value-object';
 
 export class Account {
@@ -8,7 +8,7 @@ export class Account {
   public status: AccountStatus;
   private balance: Balance;
 
-  public owner: any | null; // Modify for customer Entity relation
+  public owner: Customer | null;
   public transactions: any[]; // Modify for transaction Entity relation
 
   public createdAt: Date | null;

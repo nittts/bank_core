@@ -6,7 +6,7 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { AccountStatus } from '../shared/enums/account-status.enum';
+import { AccountStatus } from '../domain/enums/account-status.enum';
 import { CustomerModel } from 'src/modules/customer/infrastructure/customer.model';
 
 @Table({ tableName: 'account' })
