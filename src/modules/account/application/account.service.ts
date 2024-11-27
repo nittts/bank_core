@@ -6,9 +6,14 @@ import { PatchStatusDTO } from '../shared/dto/patch-status.dto';
 import { CreateAccountDTO } from '../shared/dto/create-account.dto';
 import { AccountStatus } from '../shared/enums/account-status.enum';
 
+import { CustomerService } from 'src/modules/customer/application/customer.service';
+
 @Injectable()
 export class AccountService {
-  constructor(private readonly accountRepository: IAccountRepository) {}
+  constructor(
+    private readonly accountRepository: IAccountRepository,
+    private readonly customerService: CustomerService,
+  ) {}
 
   async getAccount(id: number) {
     const account = await this.accountRepository.find(id);
@@ -31,9 +36,9 @@ export class AccountService {
   }
 
   async createAccount(createAccountDTO: CreateAccountDTO) {
-    console.log(createAccountDTO);
+    const { ownerId } = createAccountDTO;
 
-    const owner = null; // Mock implementation until customer entity is created and related
+    const owner = await this.customerService.getCustomer(ownerId);
 
     const accountNumber = await this.accountRepository.getNewAccountNumber();
 

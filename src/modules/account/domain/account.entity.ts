@@ -1,3 +1,4 @@
+import { Customer } from 'src/modules/customer/domain/customer.entity';
 import { AccountStatus } from '../shared/enums/account-status.enum';
 import { Balance } from './value-objects/balance.value-object';
 
@@ -17,7 +18,7 @@ export class Account {
     id: number | null,
     number: string,
     status: AccountStatus,
-    owner: any,
+    owner: Customer,
     createdAt: Date | null,
     updatedAt: Date | null,
     transactions: any[] | null,
@@ -29,8 +30,8 @@ export class Account {
     this.status = status;
     this.transactions = transactions ?? [];
     this.balance = new Balance(balance);
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
+    this.createdAt = new Date(createdAt);
+    this.updatedAt = new Date(updatedAt);
   }
 
   incrementBalance(amount: number) {

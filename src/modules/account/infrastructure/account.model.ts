@@ -1,5 +1,13 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import { AccountStatus } from '../shared/enums/account-status.enum';
+import { CustomerModel } from 'src/modules/customer/infrastructure/customer.model';
 
 @Table({ tableName: 'account' })
 export class AccountModel extends Model<AccountModel> {
@@ -26,10 +34,9 @@ export class AccountModel extends Model<AccountModel> {
   })
   balance: number;
 
-  @Column({
-    type: DataType.INTEGER,
-    allowNull: false,
-    field: 'owner_id',
-  })
+  @ForeignKey(() => CustomerModel)
   owner_id: number;
+
+  @BelongsTo(() => CustomerModel)
+  owner: CustomerModel;
 }

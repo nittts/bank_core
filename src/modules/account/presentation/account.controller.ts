@@ -17,7 +17,6 @@ export class AccountController {
 
   @Post('/')
   async createAccount(@Body() payload: CreateAccountDTO) {
-    console.log(payload);
     return this.accountService.createAccount(payload);
   }
 
