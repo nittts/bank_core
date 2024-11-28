@@ -55,11 +55,6 @@ export class TransactionRepository implements ITransactionRepository {
       const persistedTransaction = await this.transactionModel.create(payload, {
         transaction: t,
       });
-      const domainTransaction =
-        this.transactionMapper.toDomain(persistedTransaction);
-
-      if (domainTransaction.id)
-        throw new Error('Transaction already persisted');
 
       const persistedAccount = await this.accountModel.findByPk(
         transaction.sender.id,
@@ -74,7 +69,7 @@ export class TransactionRepository implements ITransactionRepository {
         { transaction: t },
       );
 
-      return domainTransaction;
+      return this.transactionMapper.toDomain(persistedTransaction);
     }, 10);
   }
 
@@ -88,11 +83,6 @@ export class TransactionRepository implements ITransactionRepository {
       const persistedTransaction = await this.transactionModel.create(payload, {
         transaction: t,
       });
-      const domainTransaction =
-        this.transactionMapper.toDomain(persistedTransaction);
-
-      if (domainTransaction.id)
-        throw new Error('Transaction already persisted');
 
       const persistedAccount = await this.accountModel.findByPk(
         transaction.receiver.id,
@@ -107,7 +97,7 @@ export class TransactionRepository implements ITransactionRepository {
         { transaction: t },
       );
 
-      return domainTransaction;
+      return this.transactionMapper.toDomain(persistedTransaction);
     }, 10);
   }
 
@@ -121,11 +111,6 @@ export class TransactionRepository implements ITransactionRepository {
       const persistedTransaction = await this.transactionModel.create(payload, {
         transaction: t,
       });
-      const domainTransaction =
-        this.transactionMapper.toDomain(persistedTransaction);
-
-      if (domainTransaction.id)
-        throw new Error('Transaction already persisted');
 
       const sender = await this.accountModel.findByPk(transaction.receiver.id, {
         transaction: t,
@@ -150,7 +135,7 @@ export class TransactionRepository implements ITransactionRepository {
         { transaction: t },
       );
 
-      return domainTransaction;
+      return this.transactionMapper.toDomain(persistedTransaction);
     }, 10);
   }
 }
