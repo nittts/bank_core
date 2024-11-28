@@ -15,6 +15,10 @@ export class Balance {
     return new Balance(this.amount.minus(amount));
   }
 
+  getBalance(): Decimal {
+    return this.amount;
+  }
+
   getAmount(): number {
     return parseFloat(this.amount.toFixed(2));
   }

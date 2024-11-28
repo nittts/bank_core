@@ -53,4 +53,8 @@ export class Account {
   updateStatus(status: AccountStatus) {
     this.status = status;
   }
+
+  hasEnoughFunds(amount: number) {
+    return this.balance.subtract(amount).getBalance().lessThan(0);
+  }
 }

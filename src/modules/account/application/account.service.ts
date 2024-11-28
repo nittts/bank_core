@@ -15,8 +15,16 @@ export class AccountService {
     private readonly accountMapper: AccountMapper,
   ) {}
 
-  async getAccount(id: number) {
-    const account = await this.accountRepository.find(id);
+  async findById(id: number) {
+    const account = await this.accountRepository.findById(id);
+
+    if (!account) throw new BadRequestException('Account not Found');
+
+    return account;
+  }
+
+  async findByNumber(number: string) {
+    const account = await this.accountRepository.findByNumber(number);
 
     if (!account) throw new BadRequestException('Account not Found');
 
@@ -26,7 +34,7 @@ export class AccountService {
   async patchAccountStatus(id: number, patchStatusDTO: PatchStatusDTO) {
     const { status } = patchStatusDTO;
 
-    const account = await this.accountRepository.find(id);
+    const account = await this.accountRepository.findById(id);
 
     if (!account) throw new BadRequestException('Account not Found');
 

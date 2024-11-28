@@ -3,12 +3,13 @@ import { Customer } from '../../domain/customer.entity';
 import { CustomerModel } from '../../infrastructure/customer.model';
 import { CreateCustomerDTO } from '../dtos/create-customer.dto';
 import { Injectable } from '@nestjs/common';
+import { Account } from 'src/modules/account/domain/account.entity';
 
 @Injectable()
 export class CustomerMapper {
   constructor(private readonly accountMapper: AccountMapper) {}
 
-  toCreate(createCustomerDTO: CreateCustomerDTO) {
+  toCreate(createCustomerDTO: CreateCustomerDTO): Customer {
     return new Customer(
       null,
       createCustomerDTO.fullName,
@@ -28,7 +29,7 @@ export class CustomerMapper {
     };
   }
 
-  toDomain(customerModel: CustomerModel) {
+  toDomain(customerModel: CustomerModel): Customer {
     const { accounts } = customerModel;
     const mappedAccounts = accounts
       ? this.mapCustomerAccounts(customerModel)
@@ -45,7 +46,7 @@ export class CustomerMapper {
     );
   }
 
-  private mapCustomerAccounts(customerModel: CustomerModel) {
+  private mapCustomerAccounts(customerModel: CustomerModel): Account[] {
     return customerModel.accounts.map((model) =>
       this.accountMapper.toDomain(model),
     );

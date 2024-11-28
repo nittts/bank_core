@@ -30,6 +30,6 @@ export class AccountController {
 
   @Get('/:id')
   async getAccount(@Param('id', ParseIntPipe) id: number) {
-    return this.accountService.getAccount(id);
+    return this.accountService.findById(id);
   }
 }

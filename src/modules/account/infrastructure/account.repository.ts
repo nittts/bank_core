@@ -28,8 +28,19 @@ export class AccountRepository implements IAccountRepository {
     return this.accountMapper.toDomain(persistedAccount);
   }
 
-  async find(id: number) {
+  async findById(id: number) {
     const persistedAccount = await this.accountModel.findByPk(id, {
+      include: this.GLOBAL_INCLUDE,
+    });
+
+    if (!persistedAccount) return null;
+
+    return this.accountMapper.toDomain(persistedAccount);
+  }
+
+  async findByNumber(number: string) {
+    const persistedAccount = await this.accountModel.findOne({
+      where: { number },
       include: this.GLOBAL_INCLUDE,
     });
 

@@ -12,7 +12,7 @@ export class AccountMapper {
     private readonly customerMapper: CustomerMapper,
   ) {}
 
-  toCreate(owner: Customer, accountNumber: string) {
+  toCreate(owner: Customer, accountNumber: string): Account {
     return new Account(
       null,
       accountNumber,
@@ -25,7 +25,7 @@ export class AccountMapper {
     );
   }
 
-  toDomain(accountModel: AccountModel) {
+  toDomain(accountModel: AccountModel): Account {
     const mappedOwner = this.mapAccountOwner(accountModel);
 
     return new Account(
@@ -49,7 +49,7 @@ export class AccountMapper {
     };
   }
 
-  private mapAccountOwner(accountModel: AccountModel) {
+  private mapAccountOwner(accountModel: AccountModel): Customer {
     return this.customerMapper.toDomain(accountModel.owner);
   }
 }
