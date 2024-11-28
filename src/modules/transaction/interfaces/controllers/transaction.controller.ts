@@ -5,11 +5,13 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 import { TransactionService } from '../../application/transaction.service';
 import { CreateInternalDTO } from '../dtos/create-internal.dto';
 import { CreateWithdrawalDTO } from '../dtos/create-withdrawal.dto';
 import { CreateDepositDTO } from '../dtos/create-deposit.dto';
+import { QueryTransactionDTO } from '../dtos/query-transaction.dto';
 
 @Controller('movimentacoes')
 export class TransactionController {
@@ -31,7 +33,10 @@ export class TransactionController {
   }
 
   @Get('/:id')
-  async getTransaction(@Param('id', ParseIntPipe) id: number) {
-    return this.transactionService.findTransaction(id);
+  async getTransaction(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() query: QueryTransactionDTO,
+  ) {
+    return this.transactionService.findTransaction(id, query.includeAccounts);
   }
 }

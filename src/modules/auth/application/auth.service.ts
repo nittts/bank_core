@@ -1,23 +1,23 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { CustomerService } from 'src/modules/customer/application/customer.service';
 import { WrongCredentialsException } from 'src/shared/exceptions/wrong-credentials.exception';
 import { LoginDTO } from '../interfaces/dtos/login.dto';
 import jwtConfig from 'src/shared/config/jwt.config';
 import { ConfigType } from '@nestjs/config';
+import { ICustomerRepository } from 'src/modules/customer/domain/customer.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly customerService: CustomerService,
+    private readonly customerRepository: ICustomerRepository,
     @Inject(jwtConfig.KEY)
     private jwtConfiguration: ConfigType<typeof jwtConfig>,
     private readonly jwtService: JwtService,
   ) {}
 
   async login({ document, password }: LoginDTO) {
-    const customer = await this.customerService.getCustomerByDocument(document);
+    const customer = await this.customerRepository.findByDocument(document);
 
     if (!customer) throw new WrongCredentialsException();
 

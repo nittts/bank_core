@@ -9,7 +9,7 @@ export class Customer {
   public birthDate: Date;
   public password: string;
 
-  public accounts: Account[];
+  public accounts: Account[] | null;
 
   public createdAt: Date | null;
   public updatedAt: Date | null;
@@ -19,7 +19,6 @@ export class Customer {
     fullName: string,
     document: string,
     birthDate: Date,
-    accounts: Account[],
     password: string,
     createdAt: Date | null,
     updatedAt: Date | null,
@@ -28,17 +27,32 @@ export class Customer {
     this.fullName = fullName;
     this.document = document;
     this.birthDate = new Date(birthDate);
-    this.accounts = accounts;
+    this.accounts = null;
     this.password = password;
     this.createdAt = new Date(createdAt);
     this.updatedAt = new Date(updatedAt);
+
+    this.validate();
   }
 
   validateDocument() {
-    return validateCPF(this.document);
+    const valid = validateCPF(this.document);
+    if (!valid) throw new Error('Invalid Document');
+  }
+
+  validate() {
+    this.validateDocument();
   }
 
   hashPassword() {
-    this.password = bcrypt.hashSync(this.password, 10);
+    return bcrypt.hashSync(this.password, 10);
+  }
+
+  setPassword(newPassword: string) {
+    this.password = newPassword;
+  }
+
+  referenceAccounts(accounts: Account[]) {
+    this.accounts = accounts;
   }
 }

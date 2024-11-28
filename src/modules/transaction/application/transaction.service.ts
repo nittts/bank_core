@@ -1,25 +1,25 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ITransactionRepository } from '../domain/transaction.repository';
-import { AccountService } from 'src/modules/account/application/account.service';
 import { TransactionMapper } from '../interfaces/mappers/transaction.mapper';
 import { InsuficientFundsException } from 'src/shared/exceptions/insuficient-funds.exception';
 import { InvalidAccountException } from 'src/shared/exceptions/invalid-account.exception';
 import { CreateWithdrawalDTO } from '../interfaces/dtos/create-withdrawal.dto';
 import { CreateDepositDTO } from '../interfaces/dtos/create-deposit.dto';
 import { CreateInternalDTO } from '../interfaces/dtos/create-internal.dto';
+import { IAccountRepository } from 'src/modules/account/domain/account.repository';
 
 @Injectable()
 export class TransactionService {
   constructor(
     private readonly transactionRepository: ITransactionRepository,
-    private readonly accountService: AccountService,
+    private readonly accountRepository: IAccountRepository,
     private readonly transactionMapper: TransactionMapper,
   ) {}
 
   async performWithDrawal(createWithdrawalDTO: CreateWithdrawalDTO) {
     const { number, amount } = createWithdrawalDTO;
 
-    const sender = await this.accountService.findByNumber(number);
+    const sender = await this.accountRepository.findByNumber(number);
 
     if (!sender) {
       throw new InvalidAccountException('Sender account not found');
@@ -38,16 +38,19 @@ export class TransactionService {
       sender,
     );
 
-    return await this.transactionRepository.performWithdrawal(
-      newTransaction,
-      (sender) => sender.decrementBalance(amount),
-    );
+    const persistedTransaction =
+      await this.transactionRepository.performWithdrawal(
+        newTransaction,
+        (sender) => sender.decrementBalance(amount),
+      );
+
+    return this.transactionMapper.toDTO(persistedTransaction);
   }
 
   async performDeposit(createDepositDTO: CreateDepositDTO) {
     const { number, amount } = createDepositDTO;
 
-    const receiver = await this.accountService.findByNumber(number);
+    const receiver = await this.accountRepository.findByNumber(number);
 
     if (!receiver) {
       throw new InvalidAccountException('Receiver account not found');
@@ -62,16 +65,19 @@ export class TransactionService {
       receiver,
     );
 
-    return await this.transactionRepository.performDeposit(
-      newTransaction,
-      (receiver) => receiver.incrementBalance(amount),
-    );
+    const persistedTransaction =
+      await this.transactionRepository.performDeposit(
+        newTransaction,
+        (receiver) => receiver.incrementBalance(amount),
+      );
+
+    return this.transactionMapper.toDTO(persistedTransaction);
   }
 
   async performInternal(createInternalDTO: CreateInternalDTO) {
     const { receiverNumber, amount, senderNumber } = createInternalDTO;
 
-    const sender = await this.accountService.findByNumber(senderNumber);
+    const sender = await this.accountRepository.findByNumber(senderNumber);
     if (!sender) {
       throw new InvalidAccountException('Sender Account not found');
     }
@@ -84,7 +90,7 @@ export class TransactionService {
       throw new InsuficientFundsException();
     }
 
-    const receiver = await this.accountService.findByNumber(receiverNumber);
+    const receiver = await this.accountRepository.findByNumber(receiverNumber);
     if (!receiver) {
       throw new InvalidAccountException('Receiver Account not found');
     }
@@ -99,20 +105,32 @@ export class TransactionService {
       receiver,
     );
 
-    return await this.transactionRepository.performTransaction(
-      newTransaction,
-      (sender, receiver) => {
-        sender.decrementBalance(amount);
-        receiver.incrementBalance(amount);
-      },
-    );
+    const persistedTransaction =
+      await this.transactionRepository.performTransaction(
+        newTransaction,
+        (sender, receiver) => {
+          sender.decrementBalance(amount);
+          receiver.incrementBalance(amount);
+        },
+      );
+
+    return this.transactionMapper.toDTO(persistedTransaction);
   }
 
-  async findTransaction(id: number) {
+  async findTransaction(id: number, includeAccounts = true) {
     const transaction = await this.transactionRepository.findById(id);
 
     if (!transaction) throw new BadRequestException('Transaction not Found');
 
-    return transaction;
+    if (includeAccounts) {
+      const { sender_id, receiver_id } = transaction;
+      const sender = await this.accountRepository.findById(sender_id);
+      transaction.referenceSender(sender);
+
+      const receiver = await this.accountRepository.findById(receiver_id);
+      transaction.referenceReceiver(receiver);
+    }
+
+    return this.transactionMapper.toDTO(transaction);
   }
 }

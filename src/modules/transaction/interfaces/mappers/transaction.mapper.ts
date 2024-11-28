@@ -2,17 +2,13 @@ import { Account } from 'src/modules/account/domain/account.entity';
 import { Transaction } from '../../domain/transaction.entity';
 import { CreateWithdrawalDTO } from '../dtos/create-withdrawal.dto';
 import { TransactionModel } from '../../infrastructure/transaction.model';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { AccountMapper } from 'src/modules/account/interfaces/mappers/account.mapper';
 import { CreateDepositDTO } from '../dtos/create-deposit.dto';
 import { CreateInternalDTO } from '../dtos/create-internal.dto';
+import { TransactionResponseDTO } from '../dtos/transaction-response.dto';
+import { AccountMapper } from 'src/modules/account/interfaces/mappers/account.mapper';
 
-@Injectable()
 export class TransactionMapper {
-  constructor(
-    @Inject(forwardRef(() => AccountMapper))
-    private readonly accountMapper: AccountMapper,
-  ) {}
+  constructor(private readonly accountMapper: AccountMapper) {}
 
   toCreateWithDrawal(
     createWithdrawalDTO: CreateWithdrawalDTO,
@@ -22,7 +18,7 @@ export class TransactionMapper {
       null,
       createWithdrawalDTO.type,
       createWithdrawalDTO.amount,
-      sender,
+      sender.id,
       null,
       new Date(),
       new Date(),
@@ -35,7 +31,7 @@ export class TransactionMapper {
       createDepositDTO.type,
       createDepositDTO.amount,
       null,
-      receiver,
+      receiver.id,
       new Date(),
       new Date(),
     );
@@ -50,8 +46,8 @@ export class TransactionMapper {
       null,
       createInternalDto.type,
       createInternalDto.amount,
-      sender,
-      receiver,
+      sender.id,
+      receiver.id,
       new Date(),
       new Date(),
     );
@@ -61,30 +57,24 @@ export class TransactionMapper {
     return {
       type: transaction.type,
       amount: transaction.amount,
-      sender_id: transaction.sender ? transaction.sender.id : null,
-      receiver_id: transaction.receiver ? transaction.receiver.id : null,
+      sender_id: transaction.sender_id,
+      receiver_id: transaction.receiver_id,
     };
   }
 
   toDomain(transactionModel: TransactionModel) {
-    const { sender, receiver } = transactionModel;
-
-    const transactionSender = sender
-      ? this.accountMapper.toDomain(sender)
-      : null;
-
-    const transactionReceiver = receiver
-      ? this.accountMapper.toDomain(receiver)
-      : null;
-
     return new Transaction(
       transactionModel.id,
       transactionModel.type,
       transactionModel.amount,
-      transactionSender,
-      transactionReceiver,
+      transactionModel.sender_id,
+      transactionModel.receiver_id,
       transactionModel.createdAt,
       transactionModel.updatedAt,
     );
+  }
+
+  toDTO(transaction: Transaction) {
+    return new TransactionResponseDTO(transaction);
   }
 }

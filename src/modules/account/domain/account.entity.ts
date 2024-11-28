@@ -9,8 +9,10 @@ export class Account {
   public status: AccountStatus;
   private balance: Balance;
 
+  public owner_id: number;
   public owner: Customer | null;
-  public transactions: Transaction[];
+
+  public transactions: Transaction[] | null;
 
   public createdAt: Date | null;
   public updatedAt: Date | null;
@@ -19,20 +21,20 @@ export class Account {
     id: number | null,
     number: string,
     status: AccountStatus,
-    owner: Customer,
+    owner_id: number,
     createdAt: Date | null,
     updatedAt: Date | null,
-    transactions: Transaction[] | null,
     balance: number,
   ) {
     this.id = id;
     this.number = number;
-    this.owner = owner;
+    this.owner_id = owner_id;
     this.status = status;
-    this.transactions = transactions ?? [];
     this.balance = new Balance(balance);
     this.createdAt = new Date(createdAt);
     this.updatedAt = new Date(updatedAt);
+    this.owner = null;
+    this.transactions = null;
   }
 
   incrementBalance(amount: number) {
@@ -57,5 +59,13 @@ export class Account {
 
   hasEnoughFunds(amount: number) {
     return this.balance.subtract(amount).getBalance().greaterThanOrEqualTo(0);
+  }
+
+  referenceOwner(owner: Customer) {
+    this.owner = owner;
+  }
+
+  referenceTransactions(transactions: Transaction[]) {
+    this.transactions = transactions;
   }
 }

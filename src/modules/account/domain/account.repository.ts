@@ -5,5 +5,6 @@ export abstract class IAccountRepository {
   abstract update(account: Account): Promise<Account>;
   abstract findById(id: number): Promise<Account | null>;
   abstract findByNumber(number: string): Promise<Account | null>;
+  abstract findByOwnerId(ownerId: number): Promise<Account[]>;
   abstract getNewAccountNumber(): Promise<string>;
 }

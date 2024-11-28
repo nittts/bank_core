@@ -8,12 +8,11 @@ import { ICustomerRepository } from './domain/customer.repository';
 import { CustomerRepository } from './infrastructure/customer.repository';
 import { CustomerMapper } from './interfaces/mappers/customer.mapper';
 
-import { AccountModel } from '../account/infrastructure/account.model';
 import { AccountModule } from '../account/account.module';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([CustomerModel, AccountModel]),
+    SequelizeModule.forFeature([CustomerModel]),
     forwardRef(() => AccountModule),
   ],
   controllers: [CustomerController],

@@ -8,6 +8,7 @@ import { DatabaseService } from 'src/shared/infrastructure/database/database.ser
 import { Account } from 'src/modules/account/domain/account.entity';
 import { AccountMapper } from 'src/modules/account/interfaces/mappers/account.mapper';
 import { Logger } from '@nestjs/common';
+import { Op } from 'sequelize';
 
 export class TransactionRepository implements ITransactionRepository {
   constructor(
@@ -15,7 +16,6 @@ export class TransactionRepository implements ITransactionRepository {
     private transactionModel: typeof TransactionModel,
     @InjectModel(AccountModel)
     private accountModel: typeof AccountModel,
-
     private readonly accountMapper: AccountMapper,
     private readonly transactionMapper: TransactionMapper,
     private readonly databaseService: DatabaseService,
@@ -23,25 +23,8 @@ export class TransactionRepository implements ITransactionRepository {
 
   logger = new Logger(TransactionRepository.name);
 
-  GLOBAL_INCLUDE = [
-    {
-      model: this.accountModel,
-      foreignKey: 'receiver_id',
-      as: 'receiver',
-      required: false,
-    },
-    {
-      model: this.accountModel,
-      foreignKey: 'sender_id',
-      as: 'sender',
-      required: false,
-    },
-  ];
-
   async findById(id: number) {
-    const persistedTransaction = await this.transactionModel.findByPk(id, {
-      include: this.GLOBAL_INCLUDE,
-    });
+    const persistedTransaction = await this.transactionModel.findByPk(id);
 
     if (!persistedTransaction) return null;
 
@@ -57,17 +40,17 @@ export class TransactionRepository implements ITransactionRepository {
 
       const persistedTransaction = await this.transactionModel.create(payload, {
         transaction: t,
-        include: this.GLOBAL_INCLUDE,
       });
 
       const persistedAccount = await this.accountModel.findByPk(
-        transaction.sender.id,
-        { transaction: t },
+        payload.sender_id,
+        {
+          transaction: t,
+        },
       );
       const domainAccount = this.accountMapper.toDomain(persistedAccount);
 
-      persistedTransaction.sender = persistedAccount;
-
+      const previousBalance = { senderBalance: domainAccount.getBalance() };
       decrementBalance(domainAccount);
 
       await persistedAccount.update(
@@ -76,7 +59,7 @@ export class TransactionRepository implements ITransactionRepository {
       );
 
       this.logger.log(
-        `Finished Withdrawal - Account: ${domainAccount.number} - from ${transaction.sender.getBalance()} to ${domainAccount.getBalance()}`,
+        `Finished Withdrawal - Account: ${domainAccount.number} - from ${previousBalance.senderBalance} to ${domainAccount.getBalance()} - id: ${persistedTransaction.id}`,
       );
 
       return this.transactionMapper.toDomain(persistedTransaction);
@@ -95,14 +78,13 @@ export class TransactionRepository implements ITransactionRepository {
       });
 
       const persistedAccount = await this.accountModel.findByPk(
-        transaction.receiver.id,
+        payload.receiver_id,
         { transaction: t },
       );
 
-      persistedTransaction.receiver = persistedAccount;
-
       const domainAccount = this.accountMapper.toDomain(persistedAccount);
 
+      const previousBalance = { receiverBalance: domainAccount.getBalance() };
       incrementBalance(domainAccount);
 
       await persistedAccount.update(
@@ -111,7 +93,7 @@ export class TransactionRepository implements ITransactionRepository {
       );
 
       this.logger.log(
-        `Finished Deposit - Account: ${domainAccount.number} - from ${transaction.receiver.getBalance()} to ${domainAccount.getBalance()}`,
+        `Finished Deposit - Account: ${domainAccount.number} - from ${previousBalance.receiverBalance} to ${domainAccount.getBalance()} - id: ${persistedTransaction.id}`,
       );
 
       return this.transactionMapper.toDomain(persistedTransaction);
@@ -127,23 +109,22 @@ export class TransactionRepository implements ITransactionRepository {
 
       const persistedTransaction = await this.transactionModel.create(payload, {
         transaction: t,
-        include: this.GLOBAL_INCLUDE,
       });
 
-      const sender = await this.accountModel.findByPk(transaction.sender.id, {
+      const sender = await this.accountModel.findByPk(payload.sender_id, {
         transaction: t,
       });
       const domainSender = this.accountMapper.toDomain(sender);
 
-      const receiver = await this.accountModel.findByPk(
-        transaction.receiver.id,
-        { transaction: t },
-      );
+      const receiver = await this.accountModel.findByPk(payload.receiver_id, {
+        transaction: t,
+      });
       const domainReceiver = this.accountMapper.toDomain(receiver);
 
-      persistedTransaction.sender = sender;
-      persistedTransaction.receiver = receiver;
-
+      const previousBalances = {
+        senderBalance: domainSender.getBalance(),
+        receiverBalance: domainReceiver.getBalance(),
+      };
       updateBalances(domainSender, domainReceiver);
 
       await sender.update(
@@ -157,10 +138,43 @@ export class TransactionRepository implements ITransactionRepository {
       );
 
       this.logger.log(
-        `Finished Transaction - Sender: ${sender.number} - from ${transaction.sender.getBalance()} to ${domainSender.getBalance()} | Receiver: ${receiver.number} - from ${transaction.receiver.getBalance()} to ${domainReceiver.getBalance()}`,
+        `Finished Transaction - Sender: ${sender.number} - from ${previousBalances.senderBalance} to ${domainSender.getBalance()} | Receiver: ${receiver.number} - from ${previousBalances.receiverBalance} to ${domainReceiver.getBalance()} - id: ${persistedTransaction.id}`,
       );
 
       return this.transactionMapper.toDomain(persistedTransaction);
     }, 10);
+  }
+
+  async findByAccountId(id: number) {
+    const transactions = await this.transactionModel.findAll({
+      where: { [Op.or]: [{ sender_id: id }, { receiver_id: id }] },
+      include: [
+        {
+          model: AccountModel,
+          foreignKey: 'sender_id',
+          as: 'sender',
+          required: false,
+        },
+        {
+          model: AccountModel,
+          as: 'receiver',
+          foreignKey: 'receiver_id',
+          required: false,
+        },
+      ],
+    });
+
+    return transactions.map((transactionModel) => {
+      const transaction = this.transactionMapper.toDomain(transactionModel);
+
+      transaction.referenceReceiver(
+        this.accountMapper.toDomain(transactionModel.receiver),
+      );
+      transaction.referenceSender(
+        this.accountMapper.toDomain(transactionModel.sender),
+      );
+
+      return transaction;
+    });
   }
 }

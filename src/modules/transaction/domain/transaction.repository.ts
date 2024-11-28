@@ -18,4 +18,6 @@ export abstract class ITransactionRepository {
   ): Promise<Transaction>;
 
   abstract findById(id: number): Promise<Transaction>;
+
+  abstract findByAccountId(id: number): Promise<Transaction[]>;
 }

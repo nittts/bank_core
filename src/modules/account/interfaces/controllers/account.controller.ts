@@ -6,10 +6,12 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { AccountService } from '../../application/account.service';
 import { CreateAccountDTO } from '../dtos/create-account.dto';
 import { PatchStatusDTO } from '../dtos/patch-status.dto';
+import { QueryAccountDTO } from '../dtos/query-account.dto';
 
 @Controller('contas')
 export class AccountController {
@@ -29,7 +31,14 @@ export class AccountController {
   }
 
   @Get('/:id')
-  async getAccount(@Param('id', ParseIntPipe) id: number) {
-    return this.accountService.findById(id);
+  async getAccount(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() query: QueryAccountDTO,
+  ) {
+    return this.accountService.findByIdWithRelations(
+      id,
+      query.includeOwner,
+      query.includeTransactions,
+    );
   }
 }

@@ -8,15 +8,12 @@ import { AccountRepository } from './infrastructure/account.repository';
 import { AccountController } from './interfaces/controllers/account.controller';
 import { AccountMapper } from './interfaces/mappers/account.mapper';
 
-import { CustomerModel } from '../customer/infrastructure/customer.model';
 import { CustomerModule } from '../customer/customer.module';
-
-import { TransactionModel } from '../transaction/infrastructure/transaction.model';
 import { TransactionModule } from '../transaction/transaction.module';
 
 @Module({
   imports: [
-    SequelizeModule.forFeature([AccountModel, CustomerModel, TransactionModel]),
+    SequelizeModule.forFeature([AccountModel]),
     forwardRef(() => CustomerModule),
     forwardRef(() => TransactionModule),
   ],

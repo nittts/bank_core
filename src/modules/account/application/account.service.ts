@@ -1,34 +1,51 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { IAccountRepository } from '../domain/account.repository';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { PatchStatusDTO } from '../interfaces/dtos/patch-status.dto';
 import { CreateAccountDTO } from '../interfaces/dtos/create-account.dto';
 
-import { CustomerService } from 'src/modules/customer/application/customer.service';
 import { AccountMapper } from '../interfaces/mappers/account.mapper';
+
+import { IAccountRepository } from '../domain/account.repository';
+import { ITransactionRepository } from 'src/modules/transaction/domain/transaction.repository';
+import { ICustomerRepository } from 'src/modules/customer/domain/customer.repository';
 
 @Injectable()
 export class AccountService {
   constructor(
     private readonly accountRepository: IAccountRepository,
-    private readonly customerService: CustomerService,
+    private readonly transactionRepository: ITransactionRepository,
+    private readonly customerRepository: ICustomerRepository,
     private readonly accountMapper: AccountMapper,
   ) {}
+
+  async findByIdWithRelations(
+    id: number,
+    includeOwner = true,
+    includeTransactions = true,
+  ) {
+    const account = await this.accountRepository.findById(id);
+
+    if (!account) throw new NotFoundException('Account not found');
+
+    if (includeOwner) {
+      const owner = await this.customerRepository.findById(account.owner_id);
+      account.referenceOwner(owner);
+    }
+
+    if (includeTransactions) {
+      const transactions = await this.transactionRepository.findByAccountId(id);
+      account.referenceTransactions(transactions);
+    }
+
+    return this.accountMapper.toDTO(account);
+  }
 
   async findById(id: number) {
     const account = await this.accountRepository.findById(id);
 
-    if (!account) throw new BadRequestException('Account not Found');
+    if (!account) throw new NotFoundException('Account not Found');
 
-    return account;
-  }
-
-  async findByNumber(number: string) {
-    const account = await this.accountRepository.findByNumber(number);
-
-    if (!account) throw new BadRequestException('Account not Found');
-
-    return account;
+    return this.accountMapper.toDTO(account);
   }
 
   async patchAccountStatus(id: number, patchStatusDTO: PatchStatusDTO) {
@@ -36,22 +53,31 @@ export class AccountService {
 
     const account = await this.accountRepository.findById(id);
 
-    if (!account) throw new BadRequestException('Account not Found');
+    if (!account) throw new NotFoundException('Account not Found');
 
     account.updateStatus(status);
 
-    return await this.accountRepository.update(account);
+    const updatedAccount = await this.accountRepository.update(account);
+
+    return this.accountMapper.toDTO(updatedAccount);
   }
 
   async createAccount(createAccountDTO: CreateAccountDTO) {
     const { ownerId } = createAccountDTO;
 
-    const owner = await this.customerService.getCustomerById(ownerId);
+    const owner = await this.customerRepository.findById(ownerId);
+
+    if (!owner) throw new NotFoundException('Owner Customer not found');
 
     const accountNumber = await this.accountRepository.getNewAccountNumber();
 
-    const newAccount = this.accountMapper.toCreate(owner, accountNumber);
+    const newAccount = this.accountMapper.toCreate(
+      createAccountDTO,
+      accountNumber,
+    );
 
-    return this.accountRepository.create(newAccount);
+    const persistedAccount = await this.accountRepository.create(newAccount);
+
+    return this.accountMapper.toDTO(persistedAccount);
   }
 }

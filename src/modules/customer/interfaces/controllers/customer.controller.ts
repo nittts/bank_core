@@ -5,11 +5,13 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CustomerService } from '../../application/customer.service';
 import { CreateCustomerDTO } from '../dtos/create-customer.dto';
 import { AuthType } from 'src/modules/auth/domain/enum/auth-type';
 import { Auth } from 'src/shared/decorators/auth.decorator';
+import { QueryCustomerDTO } from '../dtos/query-customer.dto';
 
 @Controller('clientes')
 export class CustomerController {
@@ -22,7 +24,13 @@ export class CustomerController {
   }
 
   @Get('/:id')
-  async getCustomer(@Param('id', ParseIntPipe) id: number) {
-    return await this.customerService.getCustomerById(id);
+  async getCustomer(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() query: QueryCustomerDTO,
+  ) {
+    return await this.customerService.getCustomerByIdWithRelations(
+      id,
+      query.includeAccounts,
+    );
   }
 }
