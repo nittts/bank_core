@@ -46,7 +46,7 @@ export class AccountService {
   async createAccount(createAccountDTO: CreateAccountDTO) {
     const { ownerId } = createAccountDTO;
 
-    const owner = await this.customerService.getCustomer(ownerId);
+    const owner = await this.customerService.getCustomerById(ownerId);
 
     const accountNumber = await this.accountRepository.getNewAccountNumber();
 

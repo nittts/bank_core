@@ -1,5 +1,6 @@
 import { IsDateString, IsNotEmpty, IsString, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+
 export class CreateCustomerDTO {
   @ApiProperty({
     description: 'Nome completo do cliente',
@@ -17,6 +18,13 @@ export class CreateCustomerDTO {
   @IsNotEmpty()
   @Matches(/^\d+$/)
   document: string;
+
+  @ApiProperty({
+    description: 'Senha do cliente',
+  })
+  @IsString()
+  @IsNotEmpty()
+  password: string;
 
   @ApiProperty({
     description: 'Data de nascimento do cliente',

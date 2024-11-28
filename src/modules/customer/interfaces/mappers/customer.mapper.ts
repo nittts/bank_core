@@ -16,6 +16,7 @@ export class CustomerMapper {
       createCustomerDTO.document,
       createCustomerDTO.birthDate,
       [],
+      createCustomerDTO.password,
       new Date(),
       new Date(),
     );
@@ -26,6 +27,7 @@ export class CustomerMapper {
       fullName: customer.fullName,
       document: customer.document,
       birthDate: customer.birthDate,
+      password: customer.password,
     };
   }
 
@@ -41,6 +43,7 @@ export class CustomerMapper {
       customerModel.document,
       customerModel.birthDate,
       mappedAccounts,
+      customerModel.password,
       customerModel.createdAt,
       customerModel.updatedAt,
     );

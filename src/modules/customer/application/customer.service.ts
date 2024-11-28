@@ -13,6 +13,8 @@ export class CustomerService {
   async createCustomer(createCustomerDTO: CreateCustomerDTO) {
     const newCustomer = this.customerMapper.toCreate(createCustomerDTO);
 
+    newCustomer.hashPassword();
+
     const validCPF = newCustomer.validateDocument();
 
     if (!validCPF) {
@@ -30,8 +32,16 @@ export class CustomerService {
     return this.customerRepository.create(newCustomer);
   }
 
-  async getCustomer(id: number) {
+  async getCustomerById(id: number) {
     const customer = await this.customerRepository.findById(id);
+
+    if (!customer) throw new BadRequestException('Customer not Found');
+
+    return customer;
+  }
+
+  async getCustomerByDocument(document: string) {
+    const customer = await this.customerRepository.findByDocument(document);
 
     if (!customer) throw new BadRequestException('Customer not Found');
 

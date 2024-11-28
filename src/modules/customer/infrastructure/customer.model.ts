@@ -20,6 +20,13 @@ export class CustomerModel extends Model<CustomerModel> {
   document: string;
 
   @Column({
+    type: DataType.STRING,
+    allowNull: false,
+    unique: true,
+  })
+  password: string;
+
+  @Column({
     type: DataType.DATE,
     allowNull: false,
     field: 'birth_date',

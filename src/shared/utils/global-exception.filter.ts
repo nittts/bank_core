@@ -9,6 +9,7 @@ import {
 
 import { InsuficientFundsException } from '../exceptions/insuficient-funds.exception';
 import { InvalidAccountException } from '../exceptions/invalid-account.exception';
+import { WrongCredentialsException } from '../exceptions/wrong-credentials.exception';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -45,6 +46,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (exception instanceof InvalidAccountException) {
       return exception.getResponse();
     }
+    if (exception instanceof WrongCredentialsException) {
+      return exception.getResponse();
+    }
 
     if (exception instanceof HttpException) {
       const exceptionResponse = exception.getResponse();
@@ -71,6 +75,10 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (exception instanceof InvalidAccountException) {
       return exception.getStatus();
     }
+    if (exception instanceof WrongCredentialsException) {
+      return exception.getResponse();
+    }
+
     if (exception instanceof HttpException) {
       return exception.getStatus();
     }
