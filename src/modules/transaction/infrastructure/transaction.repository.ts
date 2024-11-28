@@ -7,6 +7,7 @@ import { Transaction } from '../domain/transaction.entity';
 import { DatabaseService } from 'src/shared/infrastructure/database/database.service';
 import { Account } from 'src/modules/account/domain/account.entity';
 import { AccountMapper } from 'src/modules/account/interfaces/mappers/account.mapper';
+import { Logger } from '@nestjs/common';
 
 export class TransactionRepository implements ITransactionRepository {
   constructor(
@@ -19,6 +20,8 @@ export class TransactionRepository implements ITransactionRepository {
     private readonly transactionMapper: TransactionMapper,
     private readonly databaseService: DatabaseService,
   ) {}
+
+  logger = new Logger(TransactionRepository.name);
 
   GLOBAL_INCLUDE = [
     {
@@ -72,6 +75,10 @@ export class TransactionRepository implements ITransactionRepository {
         { transaction: t },
       );
 
+      this.logger.log(
+        `Finished Withdrawal - Account: ${domainAccount.number} - from ${transaction.sender.getBalance()} to ${domainAccount.getBalance()}`,
+      );
+
       return this.transactionMapper.toDomain(persistedTransaction);
     }, 10);
   }
@@ -101,6 +108,10 @@ export class TransactionRepository implements ITransactionRepository {
       await persistedAccount.update(
         { balance: domainAccount.getBalance() },
         { transaction: t },
+      );
+
+      this.logger.log(
+        `Finished Deposit - Account: ${domainAccount.number} - from ${transaction.sender.getBalance()} to ${domainAccount.getBalance()}`,
       );
 
       return this.transactionMapper.toDomain(persistedTransaction);
@@ -143,6 +154,10 @@ export class TransactionRepository implements ITransactionRepository {
       await receiver.update(
         { balance: domainReceiver.getBalance() },
         { transaction: t },
+      );
+
+      this.logger.log(
+        `Finished Transaction - Sender: ${sender.number} - from ${transaction.sender.getBalance()} to ${domainSender.getBalance()} | Receiver: ${receiver.number} - from ${transaction.receiver.getBalance()} to ${domainReceiver.getBalance()}`,
       );
 
       return this.transactionMapper.toDomain(persistedTransaction);
