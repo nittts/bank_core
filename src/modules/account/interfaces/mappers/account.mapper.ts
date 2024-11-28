@@ -4,12 +4,15 @@ import { Account } from '../../domain/account.entity';
 import { AccountStatus } from '../../domain/enums/account-status.enum';
 import { AccountModel } from '../../infrastructure/account.model';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { TransactionMapper } from 'src/modules/transaction/interfaces/mappers/transaction.mapper';
 
 @Injectable()
 export class AccountMapper {
   constructor(
     @Inject(forwardRef(() => CustomerMapper))
     private readonly customerMapper: CustomerMapper,
+    @Inject(forwardRef(() => TransactionMapper))
+    private readonly transactionMapper: TransactionMapper,
   ) {}
 
   toCreate(owner: Customer, accountNumber: string): Account {
@@ -26,7 +29,12 @@ export class AccountMapper {
   }
 
   toDomain(accountModel: AccountModel): Account {
-    const mappedOwner = this.mapAccountOwner(accountModel);
+    const { owner, transactions } = accountModel;
+
+    const mappedOwner = owner ? this.mapAccountOwner(accountModel) : null;
+    const mappedTransactions = transactions
+      ? this.mapAccountTransactions(accountModel)
+      : [];
 
     return new Account(
       accountModel.id,
@@ -35,7 +43,7 @@ export class AccountMapper {
       mappedOwner,
       accountModel.createdAt,
       accountModel.updatedAt,
-      [],
+      mappedTransactions,
       accountModel.balance,
     );
   }
@@ -49,7 +57,12 @@ export class AccountMapper {
     };
   }
 
-  private mapAccountOwner(accountModel: AccountModel): Customer {
+  private mapAccountOwner(accountModel: AccountModel) {
     return this.customerMapper.toDomain(accountModel.owner);
+  }
+  private mapAccountTransactions(accountModel: AccountModel) {
+    return accountModel.transactions.map((model) =>
+      this.transactionMapper.toDomain(model),
+    );
   }
 }

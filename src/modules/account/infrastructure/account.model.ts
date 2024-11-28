@@ -3,11 +3,13 @@ import {
   Column,
   DataType,
   ForeignKey,
+  HasMany,
   Model,
   Table,
 } from 'sequelize-typescript';
 import { AccountStatus } from '../domain/enums/account-status.enum';
 import { CustomerModel } from 'src/modules/customer/infrastructure/customer.model';
+import { TransactionModel } from 'src/modules/transaction/infrastructure/transaction.model';
 
 @Table({ tableName: 'account' })
 export class AccountModel extends Model<AccountModel> {
@@ -39,4 +41,7 @@ export class AccountModel extends Model<AccountModel> {
 
   @BelongsTo(() => CustomerModel)
   owner: CustomerModel;
+
+  @HasMany(() => TransactionModel)
+  transactions: TransactionModel[];
 }

@@ -4,6 +4,7 @@ import { Account } from '../domain/account.entity';
 import { IAccountRepository } from '../domain/account.repository';
 import { CustomerModel } from 'src/modules/customer/infrastructure/customer.model';
 import { AccountMapper } from '../interfaces/mappers/account.mapper';
+import { TransactionModel } from 'src/modules/transaction/infrastructure/transaction.model';
 
 export class AccountRepository implements IAccountRepository {
   private static START_ACCOUNT_NUMBER = '00000000000';
@@ -11,10 +12,32 @@ export class AccountRepository implements IAccountRepository {
   constructor(
     @InjectModel(CustomerModel) private customerModel: typeof CustomerModel,
     @InjectModel(AccountModel) private accountModel: typeof AccountModel,
+    @InjectModel(TransactionModel)
+    private transactionModel: typeof TransactionModel,
     private readonly accountMapper: AccountMapper,
   ) {}
 
-  GLOBAL_INCLUDE = [{ model: this.customerModel, required: true }];
+  GLOBAL_INCLUDE = [
+    { model: this.customerModel, required: true },
+    {
+      model: this.transactionModel,
+      required: false,
+      include: [
+        {
+          model: this.accountModel,
+          foreignKey: 'receiver_id',
+          as: 'receiver',
+          required: false,
+        },
+        {
+          model: this.accountModel,
+          foreignKey: 'sender_id',
+          as: 'sender',
+          required: false,
+        },
+      ],
+    },
+  ];
 
   async create(account: Account) {
     const payload = this.accountMapper.toPersistence(account);

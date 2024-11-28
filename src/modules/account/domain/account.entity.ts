@@ -1,6 +1,7 @@
 import { Customer } from 'src/modules/customer/domain/customer.entity';
 import { AccountStatus } from './enums/account-status.enum';
 import { Balance } from './value-objects/balance.value-object';
+import { Transaction } from 'src/modules/transaction/domain/transaction.entity';
 
 export class Account {
   public id: number | null;
@@ -21,7 +22,7 @@ export class Account {
     owner: Customer,
     createdAt: Date | null,
     updatedAt: Date | null,
-    transactions: any[] | null,
+    transactions: Transaction[] | null,
     balance: number,
   ) {
     this.id = id;
@@ -55,6 +56,6 @@ export class Account {
   }
 
   hasEnoughFunds(amount: number) {
-    return this.balance.subtract(amount).getBalance().lessThan(0);
+    return this.balance.subtract(amount).getBalance().greaterThanOrEqualTo(0);
   }
 }

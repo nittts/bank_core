@@ -2,14 +2,17 @@ import { Account } from 'src/modules/account/domain/account.entity';
 import { Transaction } from '../../domain/transaction.entity';
 import { CreateWithdrawalDTO } from '../dtos/create-withdrawal.dto';
 import { TransactionModel } from '../../infrastructure/transaction.model';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { AccountMapper } from 'src/modules/account/interfaces/mappers/account.mapper';
 import { CreateDepositDTO } from '../dtos/create-deposit.dto';
 import { CreateInternalDTO } from '../dtos/create-internal.dto';
 
 @Injectable()
 export class TransactionMapper {
-  constructor(private readonly accountMapper: AccountMapper) {}
+  constructor(
+    @Inject(forwardRef(() => AccountMapper))
+    private readonly accountMapper: AccountMapper,
+  ) {}
 
   toCreateWithDrawal(
     createWithdrawalDTO: CreateWithdrawalDTO,

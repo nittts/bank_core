@@ -1,5 +1,7 @@
+import { Injectable } from '@nestjs/common';
 import { Sequelize, Transaction } from 'sequelize';
 
+@Injectable()
 export class DatabaseService {
   constructor(private readonly sequelize: Sequelize) {}
 
@@ -16,6 +18,7 @@ export class DatabaseService {
       try {
         result = await work(transaction);
         await transaction.commit();
+        break;
       } catch (e) {
         await transaction.rollback();
 
@@ -23,6 +26,8 @@ export class DatabaseService {
           retries++;
           continue;
         }
+
+        throw Error(e);
       }
     }
 

@@ -33,16 +33,30 @@ export class Transaction {
   }
 
   validateWithDrawalFields() {
-    let invalid = false;
+    if (this.sender === null) throw new Error('Invalid sender');
+  }
 
-    if (this.sender === null) invalid = true;
+  validateDepositFields() {
+    if (this.receiver === null) throw new Error('Invalid receiver');
+  }
 
-    if (invalid) throw new Error('Invalid sender');
+  validateInternalFields() {
+    if (this.sender === null) throw new Error('Invalid sender');
+    if (this.receiver === null) throw new Error('Invalid receiver');
   }
 
   validate() {
     if (this.type === TransactionType.WITHDRAWAL) {
       this.validateWithDrawalFields();
     }
+    if (this.type === TransactionType.DEPOSIT) {
+      this.validateDepositFields();
+    }
+
+    if (this.type === TransactionType.INTERNAL) {
+      this.validateInternalFields();
+    }
+
+    if (this.amount < 0) throw new Error('Invalid Transaction amount');
   }
 }

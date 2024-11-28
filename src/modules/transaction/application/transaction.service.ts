@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ITransactionRepository } from '../domain/transaction.repository';
 import { AccountService } from 'src/modules/account/application/account.service';
 import { TransactionMapper } from '../interfaces/mappers/transaction.mapper';
-import { InsuficientFundsError } from 'src/shared/exceptions/insuficient-funds.exception';
+import { InsuficientFundsException } from 'src/shared/exceptions/insuficient-funds.exception';
 import { InvalidAccountException } from 'src/shared/exceptions/invalid-account.exception';
 import { CreateWithdrawalDTO } from '../interfaces/dtos/create-withdrawal.dto';
 import { CreateDepositDTO } from '../interfaces/dtos/create-deposit.dto';
@@ -30,7 +30,7 @@ export class TransactionService {
     }
 
     if (!sender.hasEnoughFunds(amount)) {
-      throw new InsuficientFundsError();
+      throw new InsuficientFundsException();
     }
 
     const newTransaction = this.transactionMapper.toCreateWithDrawal(
@@ -53,6 +53,10 @@ export class TransactionService {
       throw new InvalidAccountException('Receiver account not found');
     }
 
+    if (!receiver.isActive()) {
+      throw new InvalidAccountException('Receiver account not active');
+    }
+
     const newTransaction = this.transactionMapper.toCreateDeposit(
       createDepositDTO,
       receiver,
@@ -72,9 +76,21 @@ export class TransactionService {
       throw new InvalidAccountException('Sender Account not found');
     }
 
+    if (!sender.isActive()) {
+      throw new InvalidAccountException('Sender account not active');
+    }
+
+    if (!sender.hasEnoughFunds(amount)) {
+      throw new InsuficientFundsException();
+    }
+
     const receiver = await this.accountService.findByNumber(receiverNumber);
     if (!receiver) {
       throw new InvalidAccountException('Receiver Account not found');
+    }
+
+    if (!receiver.isActive()) {
+      throw new InvalidAccountException('Receiver account not active');
     }
 
     const newTransaction = this.transactionMapper.toCreateInternal(

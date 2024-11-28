@@ -54,6 +54,7 @@ export class TransactionRepository implements ITransactionRepository {
 
       const persistedTransaction = await this.transactionModel.create(payload, {
         transaction: t,
+        include: this.GLOBAL_INCLUDE,
       });
 
       const persistedAccount = await this.accountModel.findByPk(
@@ -61,6 +62,8 @@ export class TransactionRepository implements ITransactionRepository {
         { transaction: t },
       );
       const domainAccount = this.accountMapper.toDomain(persistedAccount);
+
+      persistedTransaction.sender = persistedAccount;
 
       decrementBalance(domainAccount);
 
@@ -88,6 +91,9 @@ export class TransactionRepository implements ITransactionRepository {
         transaction.receiver.id,
         { transaction: t },
       );
+
+      persistedTransaction.receiver = persistedAccount;
+
       const domainAccount = this.accountMapper.toDomain(persistedAccount);
 
       incrementBalance(domainAccount);
@@ -110,9 +116,10 @@ export class TransactionRepository implements ITransactionRepository {
 
       const persistedTransaction = await this.transactionModel.create(payload, {
         transaction: t,
+        include: this.GLOBAL_INCLUDE,
       });
 
-      const sender = await this.accountModel.findByPk(transaction.receiver.id, {
+      const sender = await this.accountModel.findByPk(transaction.sender.id, {
         transaction: t,
       });
       const domainSender = this.accountMapper.toDomain(sender);
@@ -122,6 +129,9 @@ export class TransactionRepository implements ITransactionRepository {
         { transaction: t },
       );
       const domainReceiver = this.accountMapper.toDomain(receiver);
+
+      persistedTransaction.sender = sender;
+      persistedTransaction.receiver = receiver;
 
       updateBalances(domainSender, domainReceiver);
 

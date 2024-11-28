@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AccountModel } from '../account/infrastructure/account.model';
 import { TransactionModel } from './infrastructure/transaction.model';
@@ -13,7 +13,7 @@ import { DatabaseModule } from 'src/shared/infrastructure/database/database.modu
 @Module({
   imports: [
     SequelizeModule.forFeature([AccountModel, TransactionModel]),
-    AccountModule,
+    forwardRef(() => AccountModule),
     DatabaseModule,
   ],
   controllers: [TransactionController],
