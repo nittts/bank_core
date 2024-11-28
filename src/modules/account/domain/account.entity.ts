@@ -10,7 +10,7 @@ export class Account {
   private balance: Balance;
 
   public owner: Customer | null;
-  public transactions: any[]; // Modify for transaction Entity relation
+  public transactions: Transaction[];
 
   public createdAt: Date | null;
   public updatedAt: Date | null;
