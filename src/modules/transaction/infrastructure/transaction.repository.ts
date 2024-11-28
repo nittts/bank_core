@@ -111,7 +111,7 @@ export class TransactionRepository implements ITransactionRepository {
       );
 
       this.logger.log(
-        `Finished Deposit - Account: ${domainAccount.number} - from ${transaction.sender.getBalance()} to ${domainAccount.getBalance()}`,
+        `Finished Deposit - Account: ${domainAccount.number} - from ${transaction.receiver.getBalance()} to ${domainAccount.getBalance()}`,
       );
 
       return this.transactionMapper.toDomain(persistedTransaction);
