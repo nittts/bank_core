@@ -14,6 +14,7 @@ import { AuthType } from '../../../auth/domain/enum/auth-type';
 import { Auth } from 'src/shared/decorators/auth.decorator';
 
 import { QueryCustomerDTO } from '../dtos/query-customer.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('clientes')
 export class CustomerController {
@@ -26,6 +27,7 @@ export class CustomerController {
   }
 
   @Get('/:id')
+  @ApiBearerAuth('token')
   async getCustomer(
     @Param('id', ParseIntPipe) id: number,
     @Query() query: QueryCustomerDTO,

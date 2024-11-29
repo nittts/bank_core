@@ -12,8 +12,10 @@ import { CreateInternalDTO } from '../dtos/create-internal.dto';
 import { CreateWithdrawalDTO } from '../dtos/create-withdrawal.dto';
 import { CreateDepositDTO } from '../dtos/create-deposit.dto';
 import { QueryTransactionDTO } from '../dtos/query-transaction.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('movimentacoes')
+@ApiBearerAuth('token')
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 

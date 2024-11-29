@@ -12,8 +12,10 @@ import { AccountService } from '../../application/account.service';
 import { CreateAccountDTO } from '../dtos/create-account.dto';
 import { PatchStatusDTO } from '../dtos/patch-status.dto';
 import { QueryAccountDTO } from '../dtos/query-account.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('contas')
+@ApiBearerAuth('token')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
