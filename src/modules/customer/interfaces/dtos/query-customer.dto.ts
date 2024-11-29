@@ -8,7 +8,7 @@ export class QueryCustomerDTO {
       'Denominando se a rota deve retornar as contas relacionadas ao cliente.',
     example: true,
   })
-  @IsOptional() // Make it optional
+  @IsOptional()
   @IsBoolean({ message: 'Value must be a boolean' })
   @Transform(({ value }) => Boolean(value))
   includeAccounts?: boolean;

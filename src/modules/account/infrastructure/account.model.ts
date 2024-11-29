@@ -7,6 +7,7 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
+
 import { AccountStatus } from '../domain/enums/account-status.enum';
 import { CustomerModel } from '../../customer/infrastructure/customer.model';
 import { TransactionModel } from '../../transaction/infrastructure/transaction.model';

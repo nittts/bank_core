@@ -1,12 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+
 import { ITransactionRepository } from '../domain/transaction.repository';
 import { TransactionMapper } from '../interfaces/mappers/transaction.mapper';
+
+import { IAccountRepository } from '../../account/domain/account.repository';
+
 import { InsuficientFundsException } from '../../../shared/exceptions/insuficient-funds.exception';
 import { InvalidAccountException } from '../../../shared/exceptions/invalid-account.exception';
+
 import { CreateWithdrawalDTO } from '../interfaces/dtos/create-withdrawal.dto';
 import { CreateDepositDTO } from '../interfaces/dtos/create-deposit.dto';
 import { CreateInternalDTO } from '../interfaces/dtos/create-internal.dto';
-import { IAccountRepository } from '../../account/domain/account.repository';
 
 @Injectable()
 export class TransactionService {

@@ -1,14 +1,17 @@
 import { InjectModel } from '@nestjs/sequelize';
+import { Logger } from '@nestjs/common';
+import { Op } from 'sequelize';
+
 import { TransactionModel } from './transaction.model';
 import { TransactionMapper } from '../interfaces/mappers/transaction.mapper';
 import { ITransactionRepository } from '../domain/transaction.repository';
 import { Transaction } from '../domain/transaction.entity';
+
 import { DatabaseService } from 'src/shared/infrastructure/database/database.service';
+
 import { AccountModel } from '../../account/infrastructure/account.model';
 import { Account } from '../../account/domain/account.entity';
 import { AccountMapper } from '../../account/interfaces/mappers/account.mapper';
-import { Logger } from '@nestjs/common';
-import { Op } from 'sequelize';
 
 export class TransactionRepository implements ITransactionRepository {
   constructor(

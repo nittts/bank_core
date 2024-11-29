@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ICustomerRepository } from '../domain/customer.repository';
 import { CreateCustomerDTO } from '../interfaces/dtos/create-customer.dto';
 import { CustomerMapper } from '../interfaces/mappers/customer.mapper';
+
 import { IAccountRepository } from '../../account/domain/account.repository';
 
 @Injectable()

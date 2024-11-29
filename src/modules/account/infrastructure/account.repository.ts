@@ -1,4 +1,5 @@
 import { InjectModel } from '@nestjs/sequelize';
+
 import { AccountModel } from './account.model';
 import { Account } from '../domain/account.entity';
 import { IAccountRepository } from '../domain/account.repository';

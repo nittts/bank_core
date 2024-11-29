@@ -1,7 +1,8 @@
 import { Customer } from '../../customer/domain/customer.entity';
+import { Transaction } from '../../transaction/domain/transaction.entity';
+
 import { AccountStatus } from './enums/account-status.enum';
 import { Balance } from './value-objects/balance.value-object';
-import { Transaction } from '../../transaction/domain/transaction.entity';
 
 export class Account {
   public id: number | null;

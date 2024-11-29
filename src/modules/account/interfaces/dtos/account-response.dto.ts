@@ -1,6 +1,7 @@
-import { CustomerResponseDTO } from '../../../customer/interfaces/dtos/customer-response.dto';
 import { Account } from '../../domain/account.entity';
 import { AccountStatus } from '../../domain/enums/account-status.enum';
+
+import { CustomerResponseDTO } from '../../../customer/interfaces/dtos/customer-response.dto';
 import { TransactionResponseDTO } from '../../../transaction/interfaces/dtos/transaction-response.dto';
 
 export class AccountResponseDTO {

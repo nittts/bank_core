@@ -1,15 +1,14 @@
 import { Account } from '../../../account/domain/account.entity';
+
 import { Transaction } from '../../domain/transaction.entity';
-import { CreateWithdrawalDTO } from '../dtos/create-withdrawal.dto';
 import { TransactionModel } from '../../infrastructure/transaction.model';
+
+import { CreateWithdrawalDTO } from '../dtos/create-withdrawal.dto';
 import { CreateDepositDTO } from '../dtos/create-deposit.dto';
 import { CreateInternalDTO } from '../dtos/create-internal.dto';
 import { TransactionResponseDTO } from '../dtos/transaction-response.dto';
-import { AccountMapper } from '../../../account/interfaces/mappers/account.mapper';
 
 export class TransactionMapper {
-  constructor(private readonly accountMapper: AccountMapper) {}
-
   toCreateWithDrawal(
     createWithdrawalDTO: CreateWithdrawalDTO,
     sender: Account,
