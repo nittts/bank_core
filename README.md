@@ -8,6 +8,28 @@ Core bancário simplificado para o desafio técnico.
 
 **Banco de Dados:** PostgreSQL
 
+## Descrição
+
+Aplicação desenvolvida seguindo estrutura e práticas de DDD, seguindo a seguinte estrutura:
+
+.
+├── src
+├── modules (englobando e agrupando os dominios e seus agregados relacionados)
+│   ├── ...
+│   │   ├── application (agrupamento dos serviços (casos de uso) do dominio)
+│   │   ├── domain (agrupamento da entidade, enums, objetos de valor e interfaces de cada dominio)
+│   │   ├── infrastructure (models do ORM(sequelize) e implementações da interface de repositório descritas no dominio)
+│   │   ├── interfaces (agrupamento de conexões externas, DTOs de comunicação e mappers de normalização do dominio)
+├── shared (módulos, exceções, tipos, configurações, decorators, utils, utilizados pela aplicação)
+├── tests
+│   ├── \_mocks (mocks de entidades para utilização dentro da aplicação)
+│   ├── application (testes relacionados aos serviços (casos de uso))
+
+- A aplicação consta com autenticação via JWT, utilizando-se do documento e senha cadastrados em cada cadastro de cliente.
+- Providênciando documentação via endpoint /api com suas definições.
+- Incluido logs durante cada execução de conciliação das movimentações para auditoria futura.
+
+
 ## Rodando localmente
 
 Clone o projeto
