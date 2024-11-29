@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ITransactionRepository } from '../domain/transaction.repository';
 import { TransactionMapper } from '../interfaces/mappers/transaction.mapper';
-import { InsuficientFundsException } from 'src/shared/exceptions/insuficient-funds.exception';
-import { InvalidAccountException } from 'src/shared/exceptions/invalid-account.exception';
+import { InsuficientFundsException } from '../../../shared/exceptions/insuficient-funds.exception';
+import { InvalidAccountException } from '../../../shared/exceptions/invalid-account.exception';
 import { CreateWithdrawalDTO } from '../interfaces/dtos/create-withdrawal.dto';
 import { CreateDepositDTO } from '../interfaces/dtos/create-deposit.dto';
 import { CreateInternalDTO } from '../interfaces/dtos/create-internal.dto';
-import { IAccountRepository } from 'src/modules/account/domain/account.repository';
+import { IAccountRepository } from '../../account/domain/account.repository';
 
 @Injectable()
 export class TransactionService {
@@ -83,8 +83,10 @@ export class TransactionService {
     }
 
     if (!sender.isActive()) {
-      throw new InvalidAccountException('Sender account not active');
+      throw new InvalidAccountException('Sender Account not active');
     }
+
+    console.log(sender, { hasFunds: sender.hasEnoughFunds(amount) });
 
     if (!sender.hasEnoughFunds(amount)) {
       throw new InsuficientFundsException();
@@ -96,7 +98,7 @@ export class TransactionService {
     }
 
     if (!receiver.isActive()) {
-      throw new InvalidAccountException('Receiver account not active');
+      throw new InvalidAccountException('Receiver Account not active');
     }
 
     const newTransaction = this.transactionMapper.toCreateInternal(

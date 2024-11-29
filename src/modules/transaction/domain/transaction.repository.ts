@@ -1,4 +1,4 @@
-import { Account } from 'src/modules/account/domain/account.entity';
+import { Account } from '../../account/domain/account.entity';
 import { Transaction } from './transaction.entity';
 
 export abstract class ITransactionRepository {

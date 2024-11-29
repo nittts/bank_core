@@ -6,8 +6,8 @@ import { CreateAccountDTO } from '../interfaces/dtos/create-account.dto';
 import { AccountMapper } from '../interfaces/mappers/account.mapper';
 
 import { IAccountRepository } from '../domain/account.repository';
-import { ITransactionRepository } from 'src/modules/transaction/domain/transaction.repository';
-import { ICustomerRepository } from 'src/modules/customer/domain/customer.repository';
+import { ITransactionRepository } from '../../transaction/domain/transaction.repository';
+import { ICustomerRepository } from '../../customer/domain/customer.repository';
 
 @Injectable()
 export class AccountService {
@@ -25,7 +25,7 @@ export class AccountService {
   ) {
     const account = await this.accountRepository.findById(id);
 
-    if (!account) throw new NotFoundException('Account not found');
+    if (!account) throw new NotFoundException('Account not Found');
 
     if (includeOwner) {
       const owner = await this.customerRepository.findById(account.owner_id);

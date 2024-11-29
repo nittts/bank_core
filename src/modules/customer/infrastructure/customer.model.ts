@@ -1,5 +1,5 @@
 import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
-import { AccountModel } from 'src/modules/account/infrastructure/account.model';
+import { AccountModel } from '../../account/infrastructure/account.model';
 
 @Table({ tableName: 'customer' })
 export class CustomerModel extends Model<CustomerModel> {

@@ -7,7 +7,7 @@ import {
   Table,
 } from 'sequelize-typescript';
 import { TransactionType } from '../domain/enums/transaction-type.enum';
-import { AccountModel } from 'src/modules/account/infrastructure/account.model';
+import { AccountModel } from '../../account/infrastructure/account.model';
 
 @Table({ tableName: 'transaction' })
 export class TransactionModel extends Model<TransactionModel> {

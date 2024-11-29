@@ -1,4 +1,4 @@
-import { Account } from 'src/modules/account/domain/account.entity';
+import { Account } from '../../account/domain/account.entity';
 import { validateCPF } from 'validations-br';
 import * as bcrypt from 'bcrypt';
 
@@ -31,8 +31,6 @@ export class Customer {
     this.password = password;
     this.createdAt = new Date(createdAt);
     this.updatedAt = new Date(updatedAt);
-
-    this.validate();
   }
 
   validateDocument() {

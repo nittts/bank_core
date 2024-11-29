@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { CustomerService } from '../../application/customer.service';
 import { CreateCustomerDTO } from '../dtos/create-customer.dto';
-import { AuthType } from 'src/modules/auth/domain/enum/auth-type';
+import { AuthType } from '../../../auth/domain/enum/auth-type';
 import { Auth } from 'src/shared/decorators/auth.decorator';
 import { QueryCustomerDTO } from '../dtos/query-customer.dto';
 

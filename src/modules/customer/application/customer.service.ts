@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ICustomerRepository } from '../domain/customer.repository';
 import { CreateCustomerDTO } from '../interfaces/dtos/create-customer.dto';
 import { CustomerMapper } from '../interfaces/mappers/customer.mapper';
-import { IAccountRepository } from 'src/modules/account/domain/account.repository';
+import { IAccountRepository } from '../../account/domain/account.repository';
 
 @Injectable()
 export class CustomerService {
@@ -14,6 +14,8 @@ export class CustomerService {
 
   async createCustomer(createCustomerDTO: CreateCustomerDTO) {
     const newCustomer = this.customerMapper.toCreate(createCustomerDTO);
+
+    newCustomer.validate();
 
     const passwordHash = newCustomer.hashPassword();
 

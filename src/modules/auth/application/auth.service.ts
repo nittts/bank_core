@@ -1,11 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { WrongCredentialsException } from 'src/shared/exceptions/wrong-credentials.exception';
+import { WrongCredentialsException } from '../../../shared/exceptions/wrong-credentials.exception';
 import { LoginDTO } from '../interfaces/dtos/login.dto';
-import jwtConfig from 'src/shared/config/jwt.config';
+import jwtConfig from '../../../shared/config/jwt.config';
 import { ConfigType } from '@nestjs/config';
-import { ICustomerRepository } from 'src/modules/customer/domain/customer.repository';
+import { ICustomerRepository } from '../../customer/domain/customer.repository';
 
 @Injectable()
 export class AuthService {

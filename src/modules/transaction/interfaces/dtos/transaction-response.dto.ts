@@ -1,4 +1,4 @@
-import { AccountResponseDTO } from 'src/modules/account/interfaces/dtos/account-response.dto';
+import { AccountResponseDTO } from '../../../account/interfaces/dtos/account-response.dto';
 import { TransactionType } from '../../domain/enums/transaction-type.enum';
 import { Transaction } from '../../domain/transaction.entity';
 

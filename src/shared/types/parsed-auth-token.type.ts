@@ -1,4 +1,4 @@
-import { Transaction } from 'src/modules/transaction/domain/transaction.entity';
+import { Transaction } from '../../modules/transaction/domain/transaction.entity';
 
 export type ParsedAuthToken = {
   sub: number;
