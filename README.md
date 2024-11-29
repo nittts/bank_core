@@ -72,6 +72,9 @@ Para realizar a criação das imagens, após isso rode:
 
 Para iniciar o servidor
 
+> **Warning**
+> Crie e preencha o arquivo .env com os exemplos passados em ./env.example antes de executar
+
 ## Autores
 
 - [@Nitts](https://www.github.com/nittts)
